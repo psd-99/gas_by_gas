@@ -6,6 +6,10 @@ import 'package:gas_by_gas/loginScreen.dart';
 import 'package:gas_by_gas/signUpScreen.dart';
 import 'package:gas_by_gas/requestScreen.dart';
 import 'package:gas_by_gas/welcomeScreen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gas_by_gas/screens/otp/otp_main_screen.dart';
+import 'package:gas_by_gas/utils/app_colors.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 void main() {
   runApp(const MyApp());
