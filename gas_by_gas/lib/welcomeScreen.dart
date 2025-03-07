@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gas_by_gas/BaseScreen/BaseScreen.dart';
+import 'package:gas_by_gas/utils/app_colors.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -27,23 +28,29 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         children: [
                           TextSpan(
                             text: 'Welcome To\n',
-                            style: TextStyle(color: Colors.black, fontSize: 24),
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 24,
+                            ),
                           ),
                           TextSpan(
                             text: 'Gas ',
                             style: TextStyle(
-                              color: Color(0xFF0097B2),
+                              color: AppColors.buttonColor,
                               fontSize: 24,
                             ),
                           ),
                           TextSpan(
                             text: 'by ',
-                            style: TextStyle(color: Colors.black, fontSize: 24),
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 24,
+                            ),
                           ),
                           TextSpan(
                             text: 'Gas',
                             style: TextStyle(
-                              color: Color(0xFFFB8C00),
+                              color: AppColors.textWelcome,
                               fontSize: 24,
                             ),
                           ),
@@ -74,7 +81,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 17),
-                              backgroundColor: const Color(0xFF0097B2),
+                              backgroundColor: AppColors.buttonColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),

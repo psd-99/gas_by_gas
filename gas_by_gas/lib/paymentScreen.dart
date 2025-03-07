@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gas_by_gas/BaseScreen/BaseScreen.dart';
+import 'package:gas_by_gas/utils/app_colors.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -27,6 +28,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -54,7 +56,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 17),
-                              backgroundColor: const Color(0xFF0097B2),
+                              backgroundColor: AppColors.buttonColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -66,7 +68,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               "Next",
                               style: TextStyle(
                                 fontSize: 18,
-                                color: Colors.white,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ),
