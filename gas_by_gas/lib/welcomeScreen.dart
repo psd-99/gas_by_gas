@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gas_by_gas/BaseScreen/BaseScreen.dart';
+import 'package:gas_by_gas/BaseScreen/baseScreen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
