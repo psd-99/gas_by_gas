@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gas_by_gas/BaseScreen/BaseScreen.dart';
+import 'package:gas_by_gas/BaseScreen/baseScreen.dart';
 import 'package:gas_by_gas/utils/app_colors.dart';
 
 class DeliveryScreen extends StatefulWidget {
