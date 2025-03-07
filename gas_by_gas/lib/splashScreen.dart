@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gas_by_gas/utils/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward().then((value) {
       // Navigate to the next screen after 2 seconds
       Future.delayed(Duration(seconds: 2), () {
-        Navigator.pushReplacementNamed(context, '/welcome');
+        Navigator.pushReplacementNamed(context, '/signup');
       });
     });
   }
@@ -41,6 +42,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Center(
         child: ScaleTransition(
           scale: _scaleAnimation,
