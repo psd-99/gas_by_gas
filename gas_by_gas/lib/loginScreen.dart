@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gas_by_gas/BaseScreen/baseScreen.dart';
@@ -12,8 +13,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _mobile = '';
-  // String _password = '';
+  String _email = '';
+  String _password = '';
   bool _obscureText = true;
 
   void _togglePasswordVisibility() {
@@ -23,7 +24,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _validateAndLogin() {
-    // Authentication logic goes here
+    if (_formKey.currentState!.validate()) {
+      FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: _email, password: _password)
+          // ignore: use_build_context_synchronously
+          .then((_) => Navigator.of(context).pushReplacementNamed('/welcome'))
+          // ignore: body_might_complete_normally_catch_error
+          .catchError((e) {
+            showDialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    title: const Text("Login Failed"),
+                    content: Text(e.message ?? "Invalid credentials."),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  ),
+            );
+          });
+    }
   }
 
   @override
@@ -74,42 +98,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 62),
                       TextFormField(
                         decoration: InputDecoration(
-                          labelText: "Mobile",
+                          labelText: "Email",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onChanged: (value) => _mobile = value,
+                        onChanged: (value) => _email = value,
                         validator:
                             (value) =>
                                 value!.isEmpty
-                                    ? "Please enter your mobile number"
+                                    ? "Please enter your Email"
                                     : null,
                       ),
-                      // const SizedBox(height: 16),
-                      // TextFormField(
-                      //   decoration: InputDecoration(
-                      //     labelText: "Password",
-                      //     border: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //     ),
-                      //     suffixIcon: IconButton(
-                      //       icon: Icon(
-                      //         _obscureText
-                      //             ? Icons.visibility_off
-                      //             : Icons.visibility,
-                      //       ),
-                      //       onPressed: _togglePasswordVisibility,
-                      //     ),
-                      //   ),
-                      //   onChanged: (value) => _password = value,
-                      //   validator:
-                      //       (value) =>
-                      //           value!.isEmpty
-                      //               ? "Please enter your password"
-                      //               : null,
-                      //   obscureText: _obscureText,
-                      // ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: _togglePasswordVisibility,
+                          ),
+                        ),
+                        onChanged: (value) => _password = value,
+                        validator:
+                            (value) =>
+                                value!.isEmpty
+                                    ? "Please enter your password"
+                                    : null,
+                        obscureText: _obscureText,
+                      ),
                       const SizedBox(height: 62),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
