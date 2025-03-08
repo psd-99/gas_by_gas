@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gas_by_gas/BaseScreen/baseScreen.dart';
@@ -23,7 +24,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _validateAndLogin() {
-    // Authentication logic goes here
+    if (_formKey.currentState!.validate()) {
+      FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: _email, password: _password)
+          // ignore: use_build_context_synchronously
+          .then((_) => Navigator.of(context).pushReplacementNamed('/welcome'))
+          // ignore: body_might_complete_normally_catch_error
+          .catchError((e) {
+            showDialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    title: const Text("Login Failed"),
+                    content: Text(e.message ?? "Invalid credentials."),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  ),
+            );
+          });
+    }
   }
 
   @override
@@ -74,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 62),
                       TextFormField(
                         decoration: InputDecoration(
-                          labelText: "Mobile",
+                          labelText: "Email",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -83,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator:
                             (value) =>
                                 value!.isEmpty
-                                    ? "Please enter your user name"
+                                    ? "Please enter your Email"
                                     : null,
                       ),
                       const SizedBox(height: 16),

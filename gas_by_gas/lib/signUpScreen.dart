@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_by_gas/BaseScreen/baseScreen.dart';
+import 'package:gas_by_gas/loginScreen.dart';
+import 'package:gas_by_gas/utils/app_colors.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -12,13 +16,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   String _firstName = '';
   String _lastName = '';
-  String? _Selectedtitle = '';
+  String? _selectedTitle;
   String _mobile = '';
   String _email = '';
   String _password = '';
   // ignore: unused_field
   String _confirmPassword = '';
   bool _agreeToTerms = false;
+  bool _obscureText = true;
+  bool _obscureConfirmText = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _obscureConfirmText = !_obscureConfirmText;
+    });
+  }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
@@ -36,48 +54,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    // if (_formKey.currentState!.validate()) {
-    //   try {
-    //     // Create a user with Firebase Authentication
-    //     UserCredential userCredential = await FirebaseAuth.instance
-    //         .createUserWithEmailAndPassword(email: _email, password: _password);
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Create a user with Firebase Authentication
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: _email, password: _password);
 
-    //     // Get the user's unique ID
-    //     String uid = userCredential.user!.uid;
+        // Get the user's unique ID
+        String uid = userCredential.user!.uid;
 
-    //     // Save additional user information to Firestore
-    //     // await FirebaseFirestore.instance.collection('users').doc(uid).set({
-    //     //   'firstName': _firstName,
-    //     //   'lastName': _lastName,
-    //     //   'mobile': _mobile,
-    //     //   'email': _email,
-    //     //   'title': _selectedTitle,
-    //     //   'termsAccepted': _agreeToTerms,
-    //     //   'createdAt': FieldValue.serverTimestamp(), // Track the signup time
-    //     // });
+        // Save additional user information to Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'firstName': _firstName,
+          'lastName': _lastName,
+          'mobile': _mobile,
+          'email': _email,
+          'title': _selectedTitle,
+          'termsAccepted': _agreeToTerms,
+          'createdAt': FieldValue.serverTimestamp(), // Track the signup time
+        });
 
-    //     // Navigate back or to a different screen after successful sign-up
-    //     // ignore: use_build_context_synchronously
-    //     Navigator.pop(context);
-    //   } catch (e) {
-    //     // Show an error dialog if sign-up fails
-    //     showDialog(
-    //       // ignore: use_build_context_synchronously
-    //       context: context,
-    //       builder:
-    //           (context) => AlertDialog(
-    //             title: const Text("Sign Up Failed"),
-    //             content: Text(e.toString()),
-    //             actions: [
-    //               TextButton(
-    //                 onPressed: () => Navigator.of(context).pop(),
-    //                 child: const Text("OK"),
-    //               ),
-    //             ],
-    //           ),
-    //     );
-    //   }
-    // }
+        // Navigate back or to a different screen after successful sign-up
+        //ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, '/login');
+      } catch (e) {
+        // Show an error dialog if sign-up fails
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text("Sign Up Failed"),
+                content: Text(e.toString()),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+        );
+      }
+    }
   }
 
   Widget build(BuildContext context) {
@@ -126,13 +144,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ), // Dummy Company Logo
                   ),
                   const SizedBox(height: 20),
+
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: "Who are you ?",
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 16,
+                      ), // Adjust height
+                    ),
+                    value: _selectedTitle,
+                    dropdownColor: AppColors.background,
+                    items:
+                        ["Mr", "Mrs", "Miss"]
+                            .map(
+                              (title) => DropdownMenuItem(
+                                value: title,
+                                child: Text(title),
+                              ),
+                            )
+                            .toList(),
+                    onChanged:
+                        (value) => setState(() => _selectedTitle = value),
+                    validator:
+                        (value) => value == null ? "Select a title" : null,
+                  ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: "First Name",
                       border: OutlineInputBorder(),
+                      focusedBorder: const OutlineInputBorder(
+                        // Prevent border color change
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      floatingLabelStyle: TextStyle(color: Colors.black),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
-                        vertical: 10,
+                        vertical: 15,
                       ),
                     ),
                     onChanged: (value) => _firstName = value,
@@ -140,11 +190,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         (value) =>
                             value!.isEmpty ? "Enter your first name" : null,
                   ),
+
                   const SizedBox(height: 16),
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: "Last Name",
                       border: OutlineInputBorder(),
+                      focusedBorder: const OutlineInputBorder(
+                        // Prevent border color change
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      floatingLabelStyle: TextStyle(color: Colors.black),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
@@ -156,31 +212,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             value!.isEmpty ? "Enter your last name" : null,
                   ),
                   const SizedBox(height: 16),
-                  // DropdownButtonFormField<String>(
-                  //   decoration: const InputDecoration(
-                  //     labelText: "Select Country",
-                  //     border: OutlineInputBorder(),
-                  //   ),
-                  //   //value: _selectedTitle,
-                  //   items:
-                  //       ["Mr", "Mrs", "Miss"]
-                  //           .map(
-                  //             (title) => DropdownMenuItem(
-                  //               value: title,
-                  //               child: Text(title),
-                  //             ),
-                  //           )
-                  //           .toList(),
-                  //   onChanged:
-                  //       (value) => setState(() => _selectedTitle = value),
-                  //   validator:
-                  //       (value) => value == null ? "Select a title" : null,
-                  // ),
-                  const SizedBox(height: 16),
+
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: "Mobile No",
                       border: OutlineInputBorder(),
+                      focusedBorder: const OutlineInputBorder(
+                        // Prevent border color change
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      floatingLabelStyle: TextStyle(color: Colors.black),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
@@ -196,6 +237,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: const InputDecoration(
                       labelText: "Email",
                       border: OutlineInputBorder(),
+                      focusedBorder: const OutlineInputBorder(
+                        // Prevent border color change
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      floatingLabelStyle: TextStyle(color: Colors.black),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
@@ -205,28 +251,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     validator:
                         (value) => value!.isEmpty ? "Enter your email" : null,
                   ),
-                  const SizedBox(height: 16),
 
                   const SizedBox(height: 16),
                   TextFormField(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Password",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
+                      border: const OutlineInputBorder(),
+                      focusedBorder: const OutlineInputBorder(
+                        // Prevent border color change
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: _togglePasswordVisibility,
+                      ),
+                      floatingLabelStyle: const TextStyle(color: Colors.black),
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
                       ),
                     ),
                     onChanged: (value) => _password = value,
                     validator: _validatePassword,
-                    obscureText: true,
+                    obscureText: _obscureText,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Confirm Password",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
+                      border: const OutlineInputBorder(),
+                      focusedBorder: const OutlineInputBorder(
+                        // Prevent border color change
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: _toggleConfirmPasswordVisibility,
+                      ),
+                      floatingLabelStyle: const TextStyle(color: Colors.black),
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
                       ),
@@ -237,31 +308,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             value != _password
                                 ? "Passwords do not match"
                                 : null,
-                    obscureText: true,
+                    obscureText: _obscureConfirmText,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       Checkbox(
                         value: _agreeToTerms,
                         onChanged:
                             (value) => setState(() => _agreeToTerms = value!),
+                        activeColor: AppColors.buttonColor,
                       ),
                       const Text("Agree with Terms & Conditions"),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _agreeToTerms ? _signUp : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Colors.blueGrey, // Customize your button color
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: const TextStyle(fontSize: 16),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, '/login'),
+                    child: const Text(
+                      "Already Have an account?  Login  ",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.buttonColor,
+                      ),
                     ),
-                    child: const Text("Sign Up"),
                   ),
-                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 17),
+                      backgroundColor: AppColors.buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: _agreeToTerms ? _signUp : null,
+                    child: const Text(
+                      "Get started",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
