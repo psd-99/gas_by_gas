@@ -28,10 +28,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'GasByGas',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: OtpScreen(),
+      home: SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/login': (BuildContext context) => const LoginScreen(),
         '/signup': (BuildContext context) => const SignUpScreen(),
+        '/otpScreen': (BuildContext context) => OtpScreen(),
         '/request': (BuildContext context) => const RequestScreen(),
         '/payment': (BuildContext context) => const PaymentScreen(),
         '/delivery': (BuildContext context) => const DeliveryScreen(),

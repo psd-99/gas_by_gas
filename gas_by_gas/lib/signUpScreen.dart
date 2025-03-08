@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_by_gas/BaseScreen/baseScreen.dart';
+import 'package:gas_by_gas/controllers/AuthController.dart';
 import 'package:gas_by_gas/loginScreen.dart';
 import 'package:gas_by_gas/utils/app_colors.dart';
+import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,6 +15,8 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final AuthController authController = Get.find();
+
   final _formKey = GlobalKey<FormState>();
   String _firstName = '';
   String _lastName = '';
@@ -56,6 +60,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
+        authController.phoneNumber = _mobile;
+        signInWithPhoneNumber();
         // Create a user with Firebase Authentication
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
@@ -76,7 +82,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         // Navigate back or to a different screen after successful sign-up
         //ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, '/login');
+        Navigator.pushNamed(context, '/otpScreen');
       } catch (e) {
         // Show an error dialog if sign-up fails
         showDialog(
@@ -96,6 +102,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
       }
     }
+  }
+
+  Future<void> signInWithPhoneNumber() async {
+    await authController.sendOTP(); // This reuses the sendOTP function
   }
 
   Widget build(BuildContext context) {
