@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:gas_by_gas/controllers/AuthController.dart';
 import 'package:gas_by_gas/deliveryScreen.dart';
 import 'package:gas_by_gas/paymentScreen.dart';
 import 'package:gas_by_gas/splashScreen.dart';
@@ -10,11 +11,13 @@ import 'package:gas_by_gas/welcomeScreen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gas_by_gas/screens/otp/otp_main_screen.dart';
 import 'package:gas_by_gas/utils/app_colors.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Get.put(AuthController());
   runApp(const MyApp());
 }
 
@@ -23,9 +26,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GasbyGas',
+      title: 'GasByGas',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: SplashScreen(),
+      home: OtpScreen(),
       routes: <String, WidgetBuilder>{
         '/login': (BuildContext context) => const LoginScreen(),
         '/signup': (BuildContext context) => const SignUpScreen(),
