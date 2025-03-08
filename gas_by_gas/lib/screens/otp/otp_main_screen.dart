@@ -1,8 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:gas_by_gas/controllers/AuthController.dart';
 import 'package:gas_by_gas/utils/app_colors.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-class OtpScreen extends StatelessWidget {
+class OtpScreen extends StatefulWidget {
+  @override
+  State<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  final AuthController authController = Get.find();
+  TextEditingController otpController = TextEditingController();
+
+  @override
+  void initState() {
+    String phoneNumber = "+13334445678";
+    authController.phoneNumber.value = phoneNumber;
+    signInWithPhoneNumber();
+
+    super.initState();
+  }
+
+  Future<void> signInWithPhoneNumber() async {
+    await authController.sendOTP(); // This reuses the sendOTP function
+  }
+
+
+  Future<void> confirmSignIn(String otp) async {
+    await authController.verifyOTP(otp); // This reuses the verifyOTP function
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,49 +57,47 @@ class OtpScreen extends StatelessWidget {
                     Image(image: AssetImage('assets/images/logo.png')),
                     const Text('Enter OTP', style: TextStyle(fontSize: 24)),
                     const SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Column(
-                        children: [
-                          PinCodeTextField(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            appContext: context,
-                            length: 5,
-                            obscureText: false,
-                            keyboardType: TextInputType.number,
-                            animationType: AnimationType.fade,
-                            pinTheme: PinTheme(
-                              shape: PinCodeFieldShape.box,
-                              borderRadius: BorderRadius.circular(8),
-                              borderWidth: 1.0,
-                              fieldHeight: 49,
-                              fieldWidth: 53,
-                              activeColor: Colors.black,
-                              inactiveColor: AppColors.grey,
-                              selectedColor: AppColors.highlight,
+                    Column(
+                      children: [
+                        PinCodeTextField(
+                          controller: otpController,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          appContext: context,
+                          length: 6,
+                          obscureText: false,
+                          keyboardType: TextInputType.number,
+                          animationType: AnimationType.fade,
+                          pinTheme: PinTheme(
+                            shape: PinCodeFieldShape.box,
+                            borderRadius: BorderRadius.circular(8),
+                            borderWidth: 1.0,
+                            fieldHeight: 49,
+                            fieldWidth: 53,
+                            activeColor: Colors.black,
+                            inactiveColor: AppColors.grey,
+                            selectedColor: AppColors.highlight,
+                          ),
+                          onChanged: (value) {},
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "Didn't Get Code? Try Again",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.highlight,
+                              ),
                             ),
-                            onChanged: (value) {},
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "Didn't Get Code? Try Again",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.highlight,
-                                ),
+                            Text(
+                              "  00:59",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.grey,
                               ),
-                              Text(
-                                "  00:59",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 32),
                     TextField(
@@ -97,7 +123,9 @@ class OtpScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await confirmSignIn(otpController.text);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.buttonColor,
                           shape: RoundedRectangleBorder(
