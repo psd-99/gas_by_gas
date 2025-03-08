@@ -3,13 +3,14 @@ import 'package:get/get.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  RxString phoneNumber = "".obs;
-  RxString verificationId = "".obs;
+  String phoneNumber = "";
+  String verificationId = "";
+  bool isNumberVerified = false;
 
 
   Future<void> sendOTP() async {
     await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber.value,
+      phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
         // Auto-sign in (only on some devices)
         await _auth.signInWithCredential(credential);
@@ -19,11 +20,11 @@ class AuthController extends GetxController {
         print("Verification Failed: ${e.message}");
       },
       codeSent: (String id, int? resendToken) {
-        verificationId.value = id; // Store verification ID
+        verificationId = id; // Store verification ID
         print("OTP Sent. Verification ID: $id");
       },
       codeAutoRetrievalTimeout: (String id) {
-        verificationId.value = id;
+        verificationId = id;
         print("OTP Timeout. Verification ID: $id");
       },
     );
@@ -32,12 +33,13 @@ class AuthController extends GetxController {
   Future<void> verifyOTP(String smsCode) async {
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId.value,
+        verificationId: verificationId,
         smsCode: smsCode,
       );
 
       UserCredential userCredential = await _auth.signInWithCredential(credential);
       print("User Signed In: ${userCredential.user!.uid}");
+      isNumberVerified = true;
     } catch (e) {
       print("Error: $e");
     }

@@ -13,19 +13,6 @@ class _OtpScreenState extends State<OtpScreen> {
   final AuthController authController = Get.find();
   TextEditingController otpController = TextEditingController();
 
-  @override
-  void initState() {
-    String phoneNumber = "+13334445678";
-    authController.phoneNumber.value = phoneNumber;
-    signInWithPhoneNumber();
-
-    super.initState();
-  }
-
-  Future<void> signInWithPhoneNumber() async {
-    await authController.sendOTP(); // This reuses the sendOTP function
-  }
-
 
   Future<void> confirmSignIn(String otp) async {
     await authController.verifyOTP(otp); // This reuses the verifyOTP function
@@ -125,6 +112,27 @@ class _OtpScreenState extends State<OtpScreen> {
                       child: ElevatedButton(
                         onPressed: () async {
                           await confirmSignIn(otpController.text);
+                          if (authController.isNumberVerified) {
+                            Navigator.pushNamed(context, '/login');
+                          }
+                          else {
+                            otpController.clear();
+                            showDialog(
+                              // ignore: use_build_context_synchronously
+                              context: context,
+                              builder:
+                                  (context) => AlertDialog(
+                                title: const Text("Incorrect OTP"),
+                                content: Text("Please enter the correct otp"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.buttonColor,
